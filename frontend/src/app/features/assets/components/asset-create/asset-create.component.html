@@ -1,0 +1,150 @@
+<div class="container" style="padding-top: 24px;">
+  <div class="card" style="max-width: 840px; margin: 0 auto;">
+
+    <div style="margin-bottom: 20px;">
+      <h2>資產新增</h2>
+      <p style="color: #888; font-size: 13px; margin-top: 4px;">財產編號將於儲存後自動產生</p>
+    </div>
+
+    <div *ngIf="loading" style="text-align:center; padding: 24px; color: #888;">載入中...</div>
+
+    <form *ngIf="!loading" [formGroup]="form" (ngSubmit)="submit()">
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0 24px;">
+
+        <!-- 左：財產編號　右：電腦名稱 -->
+        <div class="form-group">
+          <label>財產編號</label>
+          <input type="text" formControlName="assetNo" placeholder="留空則自動產生">
+        </div>
+        <div class="form-group">
+          <label>電腦名稱</label>
+          <input type="text" formControlName="computerName" placeholder="例：PC001">
+        </div>
+
+        <!-- 左：購買日期　右：配發日 -->
+        <div class="form-group">
+          <label>購買日期</label>
+          <input type="date" formControlName="purchaseDate">
+        </div>
+        <div class="form-group">
+          <label>配發日</label>
+          <input type="date" formControlName="dispatchDate">
+        </div>
+
+        <!-- 規格：整行 -->
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label>規格</label>
+          <textarea formControlName="spec" rows="1"
+            placeholder="例：Intel(R) Celeron(R) CPU E3400 @ 2.60GHz / 2G"
+            style="resize: vertical;"></textarea>
+        </div>
+
+        <!-- 左：LAN MAC　右：WiFi MAC -->
+        <div class="form-group">
+          <label>LAN MAC</label>
+          <input type="text" formControlName="lanMac" placeholder="XX:XX:XX:XX:XX:XX">
+        </div>
+        <div class="form-group">
+          <label>WiFi MAC</label>
+          <input type="text" formControlName="wifiMac" placeholder="XX:XX:XX:XX:XX:XX">
+        </div>
+
+        <!-- 左：Type　右：用途 -->
+        <div class="form-group">
+          <label>Type</label>
+          <input type="text" formControlName="assetType" placeholder="例：PC">
+        </div>
+        <div class="form-group">
+          <label>用途</label>
+          <input type="text" formControlName="purpose" placeholder="例：產線設備">
+        </div>
+
+        <!-- 左：廠區　右：部門 -->
+        <div class="form-group">
+          <label>廠區</label>
+          <select formControlName="site">
+            <option value="">請選擇廠區</option>
+            <option *ngFor="let s of siteOptions" [value]="s">{{ s }}</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>部門</label>
+          <input type="text" formControlName="department" placeholder="請輸入部門">
+        </div>
+
+        <!-- 左：管理人　右：使用者 -->
+        <div class="form-group custodian-wrap">
+          <label>管理人</label>
+          <input type="text"
+            [value]="managerSearch"
+            (input)="onManagerInput($event)"
+            (focus)="onManagerFocus()"
+            (blur)="onManagerBlur()"
+            placeholder="輸入姓名搜尋或下拉選擇"
+            autocomplete="off">
+          <div class="ac-dropdown" *ngIf="showManagerDropdown">
+            <div class="ac-option ac-clear" (mousedown)="clearManager()">（暫不指定）</div>
+            <div class="ac-option" *ngFor="let e of filteredManagers" (mousedown)="selectManager(e)">
+              {{ e.name }}<span class="ac-dept">{{ e.department }}</span>
+            </div>
+            <div class="ac-empty" *ngIf="filteredManagers.length === 0">無符合結果</div>
+          </div>
+        </div>
+        <div class="form-group custodian-wrap">
+          <label>使用者</label>
+          <input type="text"
+            [value]="custodianSearch"
+            (input)="onCustodianInput($event)"
+            (focus)="onCustodianFocus()"
+            (blur)="onCustodianBlur()"
+            placeholder="輸入姓名搜尋或下拉選擇"
+            autocomplete="off">
+          <div class="ac-dropdown" *ngIf="showCustodianDropdown">
+            <div class="ac-option ac-clear" (mousedown)="clearCustodian()">（暫不指定）</div>
+            <div class="ac-option" *ngFor="let e of filteredCustodians" (mousedown)="selectCustodian(e)">
+              {{ e.name }}<span class="ac-dept">{{ e.department }}</span>
+            </div>
+            <div class="ac-empty" *ngIf="filteredCustodians.length === 0">無符合結果</div>
+          </div>
+        </div>
+
+        <!-- 左：Office　右：OS序號 -->
+        <div class="form-group">
+          <label>Office</label>
+          <input type="text" formControlName="officeVersion" placeholder="例：Office 2021">
+        </div>
+        <div class="form-group">
+          <label>OS序號</label>
+          <input type="text" formControlName="osSerial" placeholder="Windows 序號">
+        </div>
+
+        <!-- 備註：整行 -->
+        <div class="form-group" style="grid-column: 1 / -1;">
+          <label>備註</label>
+          <textarea formControlName="notes" rows="2"
+            placeholder="選填備註"
+            style="resize: vertical;"></textarea>
+        </div>
+
+      </div>
+
+      <div *ngIf="successMsg"
+        style="color: #388e3c; background: #e8f5e9; padding: 10px 14px; border-radius: 4px; margin-bottom: 12px; font-size: 14px;">
+        {{ successMsg }}
+      </div>
+      <div *ngIf="errorMsg"
+        style="color: #d32f2f; background: #ffebee; padding: 10px 14px; border-radius: 4px; margin-bottom: 12px; font-size: 14px;">
+        {{ errorMsg }}
+      </div>
+
+      <div style="display: flex; gap: 8px; margin-top: 8px;">
+        <button type="submit" class="btn btn-primary" [disabled]="submitting">
+          {{ submitting ? '儲存中...' : '儲存' }}
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="cancel()">取消</button>
+      </div>
+
+    </form>
+  </div>
+</div>

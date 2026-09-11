@@ -1,0 +1,90 @@
+<div class="container" style="padding-top: 24px;">
+  <div class="card">
+
+    <div style="margin-bottom: 16px;">
+      <h2>人員管理</h2>
+    </div>
+
+    <!-- 搜尋列 -->
+    <div class="search-bar">
+      <div class="search-field">
+        <label>工號</label>
+        <input [(ngModel)]="filter.employeeId" placeholder="搜尋…" class="search-input">
+      </div>
+      <div class="search-field">
+        <label>姓名</label>
+        <input [(ngModel)]="filter.name" placeholder="搜尋…" class="search-input">
+      </div>
+      <div class="search-field">
+        <label>部門</label>
+        <input [(ngModel)]="filter.department" placeholder="搜尋…" class="search-input">
+      </div>
+      <div class="search-field">
+        <label>狀態</label>
+        <select [(ngModel)]="filter.status" class="search-input">
+          <option value="">全部</option>
+          <option value="active">在職</option>
+          <option value="inactive">離職</option>
+        </select>
+      </div>
+      <button class="btn-clear" (click)="clearFilter()">清除</button>
+    </div>
+
+    <div class="result-count" *ngIf="!loading">
+      共 {{ filteredEmployees.length }} 筆 / {{ employees.length }} 筆
+    </div>
+
+    <div *ngIf="loading" style="text-align: center; padding: 24px; color: #888;">載入中...</div>
+
+    <div style="overflow-x: auto;" *ngIf="!loading">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 80px;">工號</th>
+            <th style="width: 90px;">姓名</th>
+            <th style="width: 100px;">部門</th>
+            <th style="width: 84px;">狀態</th>
+            <th style="width: 84px;">權限</th>
+            <th style="width: 80px;">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let emp of filteredEmployees" [style.opacity]="emp.isActive ? '1' : '0.55'">
+            <td style="font-family: monospace; color: #888; font-size: 13px;">{{ emp.employeeId }}</td>
+            <td>
+              <input [(ngModel)]="emp.name" class="cell-input">
+            </td>
+            <td>
+              <input [(ngModel)]="emp.department" class="cell-input">
+            </td>
+            <td>
+              <select [(ngModel)]="emp.isActive" class="cell-select">
+                <option [ngValue]="true">在職</option>
+                <option [ngValue]="false">離職</option>
+              </select>
+            </td>
+            <td>
+              <select [(ngModel)]="emp.role" class="cell-select">
+                <option value="user">一般</option>
+                <option value="admin">Admin</option>
+              </select>
+            </td>
+            <td>
+              <button class="btn btn-primary"
+                style="padding: 4px 12px; font-size: 13px; white-space: nowrap;"
+                (click)="update(emp)" [disabled]="emp.saving">
+                {{ emp.saving ? '...' : (emp.saved ? '✓' : '更新') }}
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="filteredEmployees.length === 0">
+            <td colspan="6" style="text-align: center; color: #999;">
+              {{ employees.length === 0 ? '尚無人員資料' : '無符合條件的資料' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>

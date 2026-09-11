@@ -1,0 +1,33 @@
+h2 { color: #1976d2; }
+h3 { color: #333; }
+
+.inv-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  background: #f5f5f5;
+  color: #888;
+
+  &.inv-done {
+    background: #e8f5e9;
+    color: #388e3c;
+  }
+}
+
+
+.btn-outline {
+  padding: 3px 10px;
+  font-size: 12px;
+  border: 1px solid #1976d2;
+  border-radius: 4px;
+  background: #fff;
+  color: #1976d2;
+  cursor: pointer;
+  transition: background .15s;
+
+  &:hover { background: #e3f0fb; }
+  &:disabled { opacity: .5; cursor: not-allowed; }
+}

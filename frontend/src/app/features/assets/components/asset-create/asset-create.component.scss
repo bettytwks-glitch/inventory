@@ -1,0 +1,50 @@
+h2 {
+  color: #1976d2;
+}
+
+.custodian-wrap {
+  position: relative;
+}
+
+.ac-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #c5ccd6;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .1);
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 200;
+}
+
+.ac-option {
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  &:hover {
+    background: #e3f2fd;
+  }
+}
+
+.ac-clear {
+  color: #888;
+  font-size: 13px;
+}
+
+.ac-dept {
+  font-size: 12px;
+  color: #999;
+}
+
+.ac-empty {
+  padding: 8px 12px;
+  font-size: 13px;
+  color: #bbb;
+}

@@ -1,0 +1,45 @@
+<div class="container" style="padding-top: 24px;">
+  <div class="card" style="max-width: 600px; margin: 0 auto;">
+    <div style="margin-bottom: 20px;">
+      <h2>員工註冊</h2>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <div class="form-group">
+        <label>工號 *</label>
+        <input type="text" formControlName="employeeId" placeholder="例：EMP001">
+      </div>
+      <div class="form-group">
+        <label>姓名 *</label>
+        <input type="text" formControlName="name" placeholder="請輸入姓名">
+      </div>
+      <div class="form-group">
+        <label>部門 *</label>
+        <input type="text" formControlName="department" placeholder="請輸入部門">
+      </div>
+      <div class="form-group">
+        <label>AD 帳號 *</label>
+        <input type="text" formControlName="adAccount" placeholder="例：ellie.lee">
+      </div>
+      <div class="form-group">
+        <label>電子郵件</label>
+        <input type="email" formControlName="email" placeholder="選填">
+      </div>
+      <div class="form-group">
+        <label>廠區別</label>
+        <input type="text" formControlName="site" placeholder="選填">
+      </div>
+
+      <div *ngIf="errorMsg" style="color: #d32f2f; font-size: 13px; margin-bottom: 12px; padding: 8px 12px; background-color: #ffebee; border-radius: 4px;">
+        {{ errorMsg }}
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 16px; margin-top: 8px;">
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid || loading">
+          {{ loading ? '註冊中...' : '完成註冊' }}
+        </button>
+        <button type="button" class="btn btn-secondary" routerLink="/auth/login">返回登入</button>
+      </div>
+    </form>
+  </div>
+</div>

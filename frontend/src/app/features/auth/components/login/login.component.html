@@ -1,0 +1,58 @@
+<div class="login-page">
+  <div class="login-card">
+
+    <div class="login-icon">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="4" y="2" width="13" height="2" rx="1" fill="white"/>
+        <rect x="7" y="1" width="7" height="3" rx="1.5" fill="white" opacity=".7"/>
+        <path d="M5 4h14a1 1 0 0 1 1 1v15a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a1 1 0 0 1 1-1z" fill="white" opacity=".25"/>
+        <rect x="7" y="8"  width="10" height="1.5" rx=".75" fill="white"/>
+        <rect x="7" y="11" width="7"  height="1.5" rx=".75" fill="white"/>
+        <path d="M7 14.5l1.5 1.5 3-3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="12" y="13.5" width="5" height="1.5" rx=".75" fill="white"/>
+      </svg>
+    </div>
+
+    <h1 class="login-title">自主盤點系統</h1>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+
+      <div class="field-wrap">
+        <span class="field-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="8" r="4"/>
+            <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/>
+          </svg>
+        </span>
+        <input type="text" formControlName="employeeId" placeholder="工號" autocomplete="username">
+      </div>
+
+      <div class="field-wrap">
+        <span class="field-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="5" y="11" width="14" height="10" rx="2"/>
+            <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+            <circle cx="12" cy="16" r="1" fill="currentColor"/>
+          </svg>
+        </span>
+        <input type="password" formControlName="password" placeholder="密碼（預設：123456）" autocomplete="current-password">
+      </div>
+
+      <label class="remember-row">
+        <input type="checkbox" formControlName="rememberAccount">
+        <span>記住工號</span>
+      </label>
+
+      <div *ngIf="errorMsg" class="error-msg">{{ errorMsg }}</div>
+
+      <button type="submit" class="login-btn" [disabled]="form.invalid || loading">
+        {{ loading ? '登入中...' : '登入' }}
+      </button>
+
+      <div class="forgot-link">
+        <a routerLink="/auth/forgot-password">忘記密碼？</a>
+      </div>
+
+    </form>
+  </div>
+</div>

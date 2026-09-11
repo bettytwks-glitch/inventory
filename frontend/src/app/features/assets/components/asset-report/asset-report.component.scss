@@ -1,0 +1,270 @@
+:host { display: block; width: 100%; }
+
+.page-wrap {
+  padding: 24px 24px 40px 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.loading { text-align: center; padding: 48px; color: #888; }
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1976d2;
+  margin-bottom: 20px;
+}
+
+/* ── 總覽卡片 ── */
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.summary-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.07);
+  padding: 20px 20px 16px;
+  border-top: 4px solid #1976d2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.total-card { border-top-color: #37474f; }
+
+.sc-value {
+  font-size: 36px;
+  font-weight: 800;
+  color: #1a2332;
+  line-height: 1;
+}
+
+.sc-label {
+  font-size: 13px;
+  color: #6b7a8d;
+  font-weight: 600;
+}
+
+.sc-pct {
+  font-size: 12px;
+  color: #aab4c0;
+  margin-top: 2px;
+}
+
+/* ── card 區塊 ── */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,.07);
+  padding: 20px 24px;
+
+  &.mt { margin-top: 20px; }
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a2332;
+  margin-bottom: 16px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eef0f3;
+}
+
+/* ── 廠區交叉表 ── */
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  th, td {
+    padding: 10px 16px;
+    text-align: center;
+    border-bottom: 1px solid #f0f2f5;
+  }
+
+  th {
+    font-size: 12px;
+    font-weight: 700;
+    color: #6b7a8d;
+    background: #f8f9fb;
+    white-space: nowrap;
+  }
+
+  tbody tr:hover td { background: #f5f8ff; }
+}
+
+.col-site {
+  text-align: left !important;
+  white-space: nowrap;
+}
+
+.site-code {
+  display: inline-block;
+  background: #e3f0fb;
+  color: #1565c0;
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-right: 8px;
+  font-family: monospace;
+}
+
+.site-label { color: #1a2332; font-size: 13px; }
+
+.col-num { text-align: center; }
+
+.col-total {
+  font-weight: 700;
+  background: #f5f7fa;
+}
+
+.num-badge {
+  display: inline-block;
+  border-radius: 6px;
+  padding: 2px 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.num-zero { color: #ccc; }
+
+.total-row td {
+  background: #f0f4ff;
+  font-weight: 700;
+  border-top: 2px solid #d0d9e8;
+}
+
+/* ── 盤點統計 ── */
+.inventory-summary {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 0 4px;
+}
+
+.inv-card {
+  text-align: center;
+  min-width: 88px;
+  padding: 14px 20px;
+  border-radius: 10px;
+  flex-shrink: 0;
+
+  &.inv-done    { background: #e8f5e9; }
+  &.inv-pending { background: #ffebee; }
+}
+
+.inv-value {
+  font-size: 32px;
+  font-weight: 800;
+  line-height: 1;
+  &.inv-done    { color: #2e7d32; }
+  &.inv-pending { color: #c62828; }
+}
+
+.inv-done    .inv-value { color: #2e7d32; }
+.inv-pending .inv-value { color: #c62828; }
+
+.inv-label { font-size: 12px; font-weight: 600; color: #555; margin-top: 4px; }
+.inv-pct   { font-size: 12px; color: #aaa; margin-top: 2px; }
+
+.inv-progress-wrap {
+  flex: 1;
+}
+
+.inv-progress-bar {
+  height: 14px;
+  background: #ffebee;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.inv-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #43a047, #66bb6a);
+  border-radius: 8px;
+  transition: width .4s ease;
+  min-width: 2px;
+}
+
+.inv-progress-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #bbb;
+  margin-top: 4px;
+}
+
+.mini-bar-wrap {
+  display: inline-block;
+  width: 80px;
+  height: 8px;
+  background: #ffebee;
+  border-radius: 4px;
+  overflow: hidden;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+.mini-bar-fill {
+  height: 100%;
+  background: #43a047;
+  border-radius: 4px;
+  min-width: 2px;
+}
+
+.mini-pct {
+  font-size: 12px;
+  color: #555;
+  vertical-align: middle;
+}
+
+/* ── Type 統計 ── */
+.type-list { display: flex; flex-direction: column; gap: 10px; }
+
+.type-row {
+  display: grid;
+  grid-template-columns: 80px 1fr 50px 44px;
+  align-items: center;
+  gap: 12px;
+}
+
+.type-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a2332;
+  white-space: nowrap;
+}
+
+.type-bar-wrap {
+  background: #f0f2f5;
+  border-radius: 6px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.type-bar {
+  height: 100%;
+  background: linear-gradient(90deg, #1976d2, #42a5f5);
+  border-radius: 6px;
+  min-width: 2px;
+  transition: width .4s ease;
+}
+
+.type-count {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a2332;
+  text-align: right;
+}
+
+.type-pct {
+  font-size: 12px;
+  color: #8a9bb0;
+  text-align: right;
+}

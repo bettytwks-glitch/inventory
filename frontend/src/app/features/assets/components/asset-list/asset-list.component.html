@@ -1,0 +1,280 @@
+<div class="page-wrap">
+  <div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <h2>資產總表</h2>
+      <a routerLink="/assets/create" class="btn btn-primary">+ 新增資產</a>
+    </div>
+
+    <!-- 搜尋列 -->
+    <div class="search-bar">
+      <div class="search-field">
+        <label>列管品編號</label>
+        <input [(ngModel)]="filter.assetNo" placeholder="搜尋…" class="search-input">
+      </div>
+      <div class="search-field">
+        <label>資產名稱</label>
+        <input [(ngModel)]="filter.assetName" placeholder="搜尋…" class="search-input">
+      </div>
+      <div class="search-field">
+        <label>廠區別</label>
+        <select [(ngModel)]="filter.site" class="search-input">
+          <option value="">全部</option>
+          <option *ngFor="let s of siteOptions" [value]="s.value">{{ s.code }} {{ s.label }}</option>
+        </select>
+      </div>
+      <div class="search-field">
+        <label>管理人</label>
+        <input [(ngModel)]="filter.managerName" placeholder="輸入姓名…" class="search-input">
+      </div>
+      <div class="search-field">
+        <label>使用者</label>
+        <input [(ngModel)]="filter.custodianName" placeholder="輸入姓名…" class="search-input">
+      </div>
+      <div class="search-field">
+        <label>使用狀態</label>
+        <select [(ngModel)]="filter.status" class="search-input">
+          <option value="">全部</option>
+          <option *ngFor="let s of statusOptions" [value]="s.value">{{ s.label }}</option>
+        </select>
+      </div>
+      <div class="search-field">
+        <label>盤點</label>
+        <select [(ngModel)]="filter.inventoried" class="search-input">
+          <option value="">全部</option>
+          <option value="yes">已盤點</option>
+          <option value="no">未盤點</option>
+        </select>
+      </div>
+      <button class="btn-clear" (click)="clearFilter()">清除</button>
+    </div>
+
+    <div class="result-count" *ngIf="!isLoading">
+      共 {{ filteredRows.length }} 筆 / {{ rows.length }} 筆
+    </div>
+
+    <div *ngIf="isLoading" style="text-align: center; padding: 24px; color: #888;">載入中...</div>
+
+    <div style="overflow-x: auto;" *ngIf="!isLoading">
+      <table style="table-layout: fixed; width: 100%;">
+        <thead>
+          <tr>
+            <th style="width: 36px;"></th>
+            <th style="width: 110px;">操作</th>
+            <th style="width: 10%;">歸屬類別</th>
+            <th style="width: 12%;">列管品編號</th>
+            <th style="width: 11%;">資產名稱</th>
+            <th style="width: 7%;">廠區別</th>
+            <th style="width: 11%;">管理人</th>
+            <th style="width: 11%;">使用者</th>
+            <th style="width: 10%;">使用狀態</th>
+            <th style="width: 7%; text-align: center;">盤點</th>
+            <th style="width: 10%;">盤點記錄</th>
+          </tr>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let row of filteredRows">
+
+            <!-- 主列 -->
+            <tr [class.row-expanded]="row.expanded">
+              <td class="expand-cell">
+                <button class="expand-btn" (click)="toggleExpand(row)" [class.is-open]="row.expanded" title="展開細項">
+                  <svg viewBox="0 0 16 16" fill="none">
+                    <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </td>
+              <td>
+                <div style="display:flex; gap:4px; align-items:center;">
+                  <button
+                    class="btn btn-primary"
+                    style="padding: 4px 10px; font-size: 13px; white-space: nowrap;"
+                    (click)="update(row)"
+                    [disabled]="row.saving">
+                    {{ row.saving ? '...' : (row.saved ? '✓' : '更新') }}
+                  </button>
+                  <button
+                    title="複製此資產"
+                    style="padding: 4px 7px; font-size: 13px; border: 1px solid #d0d5dd; border-radius: 5px; background:#fff; cursor:pointer; color:#555; line-height:1;"
+                    (click)="copy(row)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                    </svg>
+                  </button>
+                </div>
+              </td>
+              <td>{{ row.category?.categoryName ?? '-' }}</td>
+              <td style="font-family: monospace;">{{ row.assetNo }}</td>
+              <td>{{ row.assetName }}</td>
+              <td>{{ getSiteCode(row.site) }}</td>
+              <td class="custodian-cell">
+                <div class="ac-wrap" [class.ac-open]="row.showManagerDrop">
+                  <input class="ac-input"
+                    [(ngModel)]="row.managerSearch"
+                    (input)="onManagerInput(row)"
+                    (focus)="onManagerFocus(row)"
+                    (blur)="hideManagerDrop(row)"
+                    placeholder="IT">
+                  <span class="ac-arrow" (mousedown)="row.showManagerDrop=!row.showManagerDrop; onManagerInput(row)">
+                    <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  </span>
+                  <div class="ac-drop" *ngIf="row.showManagerDrop">
+                    <div class="ac-item" (mousedown)="clearManager(row)"
+                      [class.ac-selected]="!row.editManagerId">
+                      <span class="ac-name">IT</span>
+                    </div>
+                    <div class="ac-item" *ngFor="let e of row.managerSuggestions"
+                      (mousedown)="selectManager(row, e)"
+                      [class.ac-selected]="row.editManagerId === e.employeeId">
+                      <span class="ac-name">{{ e.name }}</span>
+                      <span class="ac-dept">{{ e.department }}</span>
+                    </div>
+                    <div *ngIf="row.managerSuggestions.length === 0" class="ac-empty">無符合結果</div>
+                  </div>
+                </div>
+              </td>
+              <td class="custodian-cell">
+                <div class="ac-wrap" [class.ac-open]="row.showCustodianDrop">
+                  <input class="ac-input"
+                    [(ngModel)]="row.custodianSearch"
+                    (input)="onCustodianInput(row)"
+                    (focus)="onCustodianFocus(row)"
+                    (blur)="hideCustodianDrop(row)"
+                    placeholder="IT">
+                  <span class="ac-arrow" (mousedown)="row.showCustodianDrop=!row.showCustodianDrop; onCustodianInput(row)">
+                    <svg viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  </span>
+                  <div class="ac-drop" *ngIf="row.showCustodianDrop">
+                    <div class="ac-item" (mousedown)="clearCustodian(row)"
+                      [class.ac-selected]="!row.editCustodianId">
+                      <span class="ac-name">IT</span>
+                    </div>
+                    <div class="ac-item" *ngFor="let e of row.custodianSuggestions"
+                      (mousedown)="selectCustodian(row, e)"
+                      [class.ac-selected]="row.editCustodianId === e.employeeId">
+                      <span class="ac-name">{{ e.name }}</span>
+                      <span class="ac-dept">{{ e.department }}</span>
+                    </div>
+                    <div *ngIf="row.custodianSuggestions.length === 0" class="ac-empty">無符合結果</div>
+                  </div>
+                </div>
+              </td>
+              <td>
+                <select [(ngModel)]="row.editStatus"
+                  style="border: 1px solid #ddd; border-radius: 4px; padding: 4px 4px; font-size: 13px; width: 100px;">
+                  <option *ngFor="let s of statusOptions" [value]="s.value">{{ s.label }}</option>
+                </select>
+              </td>
+              <td style="text-align:center;">
+                <span class="inv-badge" [class.inv-done]="row.inventoried">
+                  {{ row.inventoried ? '已盤點' : '未盤點' }}
+                </span>
+              </td>
+              <td style="padding-left: 12px;">
+                <ng-container *ngIf="row.inventoried && row.inventoriedAt">
+                  <div style="display:flex; flex-direction:column; gap:1px;">
+                    <span style="font-size:13px; color:#444;">{{ row.inventoriedAt | date:'MM/dd HH:mm' }}</span>
+                    <span style="font-size:13px; color:#444;">{{ row.inventoriedBy }}</span>
+                  </div>
+                </ng-container>
+              </td>
+            </tr>
+
+            <!-- 展開細項 (可編輯) -->
+            <tr *ngIf="row.expanded" class="detail-row">
+              <td colspan="11">
+                <div class="detail-panel">
+
+                  <div class="detail-grid">
+
+                    <!-- 財產編號 | 電腦名稱 -->
+                    <div class="df">
+                      <label class="df-label">財產編號</label>
+                      <input class="df-input mono" [(ngModel)]="row.detailEdit.assetNo" placeholder="財產編號">
+                    </div>
+                    <div class="df">
+                      <label class="df-label">電腦名稱</label>
+                      <input class="df-input" [(ngModel)]="row.detailEdit.computerName" placeholder="例：PC001">
+                    </div>
+
+                    <!-- 購買日期 | 配發日 -->
+                    <div class="df">
+                      <label class="df-label">購買日期</label>
+                      <input class="df-input" type="date" [(ngModel)]="row.detailEdit.purchaseDate">
+                    </div>
+                    <div class="df">
+                      <label class="df-label">配發日</label>
+                      <input class="df-input" type="date" [(ngModel)]="row.detailEdit.dispatchDate">
+                    </div>
+
+                    <!-- 規格 (full) -->
+                    <div class="df full">
+                      <label class="df-label">規格</label>
+                      <textarea class="df-input" rows="1" [(ngModel)]="row.detailEdit.spec"
+                        placeholder="例：Intel(R) Celeron(R) CPU E3400 @ 2.60GHz / 2G"></textarea>
+                    </div>
+
+                    <!-- LAN MAC | WiFi MAC -->
+                    <div class="df">
+                      <label class="df-label">LAN MAC</label>
+                      <input class="df-input mono" [(ngModel)]="row.detailEdit.lanMac" placeholder="xx:xx:xx:xx:xx:xx">
+                    </div>
+                    <div class="df">
+                      <label class="df-label">WiFi MAC</label>
+                      <input class="df-input mono" [(ngModel)]="row.detailEdit.wifiMac" placeholder="xx:xx:xx:xx:xx:xx">
+                    </div>
+
+                    <!-- Type | 用途 -->
+                    <div class="df">
+                      <label class="df-label">Type</label>
+                      <input class="df-input" [(ngModel)]="row.detailEdit.assetType" placeholder="例：PC">
+                    </div>
+                    <div class="df">
+                      <label class="df-label">用途</label>
+                      <input class="df-input" [(ngModel)]="row.detailEdit.purpose" placeholder="例：產線設備">
+                    </div>
+
+                    <!-- 廠區 | 部門 -->
+                    <div class="df">
+                      <label class="df-label">廠區</label>
+                      <select class="df-input" [(ngModel)]="row.detailEdit.site">
+                        <option value="">-</option>
+                        <option *ngFor="let s of siteOptions" [value]="s.value">{{ s.code }} {{ s.label }}</option>
+                      </select>
+                    </div>
+                    <div class="df">
+                      <label class="df-label">部門</label>
+                      <input class="df-input" [(ngModel)]="row.detailEdit.department">
+                    </div>
+
+
+                    <!-- OS序號 -->
+                    <div class="df">
+                      <label class="df-label">OS序號</label>
+                      <input class="df-input mono" [(ngModel)]="row.detailEdit.osSerial">
+                    </div>
+
+                    <!-- 備註 (full) -->
+                    <div class="df full">
+                      <label class="df-label">備註</label>
+                      <textarea class="df-input" rows="2" [(ngModel)]="row.detailEdit.notes"></textarea>
+                    </div>
+
+                  </div>
+
+
+                </div>
+              </td>
+            </tr>
+
+          </ng-container>
+
+          <tr *ngIf="filteredRows.length === 0">
+            <td colspan="11" style="text-align: center; color: #999;">
+              {{ rows.length === 0 ? '尚無資產資料' : '無符合條件的資料' }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

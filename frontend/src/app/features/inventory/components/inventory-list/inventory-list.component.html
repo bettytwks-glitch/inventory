@@ -1,0 +1,59 @@
+<div class="container" style="padding: 24px;">
+  <div class="card">
+    <h2>庫存列表</h2>
+
+    <div *ngIf="isLoading" style="text-align: center; padding: 24px; color: #888;">載入中...</div>
+    <div *ngIf="errorMsg" style="color: red; padding: 8px;">{{ errorMsg }}</div>
+
+    <div style="overflow-x: auto;" *ngIf="!isLoading">
+      <table>
+        <thead>
+          <tr>
+            <th>歸屬類別</th>
+            <th>列管品編號</th>
+            <th>資產名稱</th>
+            <th>廠區別</th>
+            <th>使用狀態</th>
+            <th style="width: 90px; text-align: center;">盤點</th>
+            <th style="width: 130px;">盤點記錄</th>
+            <th style="width: 110px;">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let row of rows">
+            <td>{{ row.category?.categoryName ?? '-' }}</td>
+            <td style="font-family: monospace;">{{ row.assetNo }}</td>
+            <td>{{ row.assetName }}</td>
+            <td>{{ row.site ?? '-' }}</td>
+            <td>{{ getStatusLabel(row.status) }}</td>
+            <td style="text-align: center;">
+              <span class="inv-badge" [class.inv-done]="row.inventoried">
+                {{ row.inventoried ? '已盤點' : '未盤點' }}
+              </span>
+            </td>
+            <td style="padding-left: 8px;">
+              <ng-container *ngIf="row.inventoried && row.inventoriedAt">
+                <div style="display:flex; flex-direction:column; gap:1px;">
+                  <span style="font-size:13px; color:#444;">{{ row.inventoriedAt | date:'MM/dd HH:mm' }}</span>
+                  <span style="font-size:13px; color:#444;">{{ row.inventoriedBy }}</span>
+                </div>
+              </ng-container>
+            </td>
+            <td>
+              <button
+                [class]="row.inventoried ? 'btn btn-outline' : 'btn btn-primary'"
+                style="padding: 3px 10px; font-size: 12px; white-space: nowrap;"
+                [disabled]="row.toggling"
+                (click)="toggle(row)">
+                {{ row.toggling ? '...' : (row.inventoried ? '取消盤點' : '盤點') }}
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="rows.length === 0">
+            <td colspan="8" style="text-align: center; color: #999;">目前沒有屬於您的資產</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

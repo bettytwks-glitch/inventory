@@ -1,0 +1,24 @@
+<header class="app-header" *ngIf="authService.isLoggedIn">
+  <div class="container">
+    <h1>{{ title }}</h1>
+    <div class="header-right">
+      <ng-container *ngIf="currentUser$ | async as user">
+        <span class="user-info">{{ user.name }}（{{ user.department }}）</span>
+      </ng-container>
+      <nav>
+        <a routerLink="/inventory" routerLinkActive="active">庫存列表</a>
+        <ng-container *ngIf="authService.isAdmin">
+          <a routerLink="/assets/list" routerLinkActive="active">資產總表</a>
+          <a routerLink="/assets/report" routerLinkActive="active">資產報表</a>
+          <a routerLink="/assets/create" routerLinkActive="active">資產新增</a>
+          <a routerLink="/personnel" routerLinkActive="active">人員管理</a>
+        </ng-container>
+      </nav>
+      <button class="btn-logout" (click)="authService.logout()">登出</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <router-outlet></router-outlet>
+</main>

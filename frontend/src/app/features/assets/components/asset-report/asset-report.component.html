@@ -1,0 +1,149 @@
+<div class="page-wrap">
+  <div *ngIf="isLoading" class="loading">載入中...</div>
+
+  <ng-container *ngIf="!isLoading">
+
+    <!-- 總覽卡片 -->
+    <div class="section-title">資產統計報表</div>
+
+    <div class="summary-cards">
+      <div class="summary-card total-card">
+        <div class="sc-value">{{ total }}</div>
+        <div class="sc-label">資產總數</div>
+      </div>
+      <div class="summary-card" *ngFor="let s of statusSummary" [style.border-top-color]="s.status.color">
+        <div class="sc-value" [style.color]="s.status.color">{{ s.count }}</div>
+        <div class="sc-label">{{ s.status.label }}</div>
+        <div class="sc-pct">{{ s.pct }}%</div>
+      </div>
+    </div>
+
+    <!-- 廠區 × 狀態交叉表 -->
+    <div class="card mt">
+      <div class="card-title">廠區別統計</div>
+      <div style="overflow-x:auto">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>廠區</th>
+              <th *ngFor="let s of statuses" [style.color]="s.color">{{ s.label }}</th>
+              <th class="col-total">合計</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of siteRows">
+              <td class="col-site">
+                <span class="site-code">{{ row.code }}</span>
+                <span class="site-label">{{ row.label }}</span>
+              </td>
+              <td *ngFor="let s of statuses" class="col-num">
+                <span *ngIf="row.counts[s.value]" class="num-badge" [style.background]="s.color + '18'" [style.color]="s.color">
+                  {{ row.counts[s.value] }}
+                </span>
+                <span *ngIf="!row.counts[s.value]" class="num-zero">-</span>
+              </td>
+              <td class="col-total col-num"><strong>{{ row.total }}</strong></td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="total-row">
+              <td>合計</td>
+              <td *ngFor="let s of statuses" class="col-num">{{ statusTotals[s.value] || 0 }}</td>
+              <td class="col-total col-num"><strong>{{ grandTotal }}</strong></td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- 盤點統計 -->
+    <div class="card mt">
+      <div class="card-title">盤點統計</div>
+
+      <!-- 總覽數字 -->
+      <div class="inventory-summary">
+        <div class="inv-card inv-done">
+          <div class="inv-value">{{ inventoried }}</div>
+          <div class="inv-label">已盤點</div>
+          <div class="inv-pct">{{ inventoriedPct }}%</div>
+        </div>
+        <div class="inv-progress-wrap">
+          <div class="inv-progress-bar">
+            <div class="inv-progress-fill" [style.width.%]="inventoriedPct"></div>
+          </div>
+          <div class="inv-progress-labels">
+            <span>0</span><span>{{ total }}</span>
+          </div>
+        </div>
+        <div class="inv-card inv-pending">
+          <div class="inv-value">{{ notInventoried }}</div>
+          <div class="inv-label">未盤點</div>
+          <div class="inv-pct">{{ 100 - inventoriedPct }}%</div>
+        </div>
+      </div>
+
+      <!-- 廠區別盤點明細 -->
+      <div style="overflow-x:auto; margin-top: 16px;">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th>廠區</th>
+              <th style="color:#2e7d32;">已盤點</th>
+              <th style="color:#c62828;">未盤點</th>
+              <th class="col-total">合計</th>
+              <th style="width: 120px;">進度</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of siteInventoryRows">
+              <td class="col-site">
+                <span class="site-code">{{ row.code }}</span>
+                <span class="site-label">{{ row.label }}</span>
+              </td>
+              <td class="col-num">
+                <span *ngIf="row.inventoried" class="num-badge" style="background:#e8f5e9;color:#2e7d32;">{{ row.inventoried }}</span>
+                <span *ngIf="!row.inventoried" class="num-zero">-</span>
+              </td>
+              <td class="col-num">
+                <span *ngIf="row.notInventoried" class="num-badge" style="background:#ffebee;color:#c62828;">{{ row.notInventoried }}</span>
+                <span *ngIf="!row.notInventoried" class="num-zero">-</span>
+              </td>
+              <td class="col-total col-num"><strong>{{ row.total }}</strong></td>
+              <td>
+                <div class="mini-bar-wrap">
+                  <div class="mini-bar-fill" [style.width.%]="row.total ? (row.inventoried / row.total * 100) : 0"></div>
+                </div>
+                <span class="mini-pct">{{ row.total ? (row.inventoried / row.total * 100 | number:'1.0-0') : 0 }}%</span>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr class="total-row">
+              <td>合計</td>
+              <td class="col-num">{{ inventoried }}</td>
+              <td class="col-num">{{ notInventoried }}</td>
+              <td class="col-total col-num"><strong>{{ total }}</strong></td>
+              <td class="mini-pct">{{ inventoriedPct }}%</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- Type 統計 -->
+    <div class="card mt">
+      <div class="card-title">設備類型統計</div>
+      <div class="type-list">
+        <div class="type-row" *ngFor="let row of typeRows">
+          <div class="type-name">{{ row.type }}</div>
+          <div class="type-bar-wrap">
+            <div class="type-bar" [style.width.%]="row.pct"></div>
+          </div>
+          <div class="type-count">{{ row.count }}</div>
+          <div class="type-pct">{{ row.pct }}%</div>
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+</div>
